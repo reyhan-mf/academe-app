@@ -3,11 +3,11 @@ import 'package:acadame/models/quiz_question.dart';
 import 'package:flutter/material.dart';
 
 class QuizPage extends StatefulWidget {
-  const QuizPage({super.key, required this.subjects, required this.topic, required this.number});
+  const QuizPage({super.key, required this.subjects, this.topic, this.number});
 
   final String subjects;
-  final String topic;
-  final String number;
+  final String? topic;
+  final String? number;
   @override
   State<QuizPage> createState() => _QuizPageState();
 }
@@ -28,7 +28,11 @@ class _QuizPageState extends State<QuizPage> {
   }
 
   void _initializeQuestions() {
-    questions = getQuestions(widget.subjects, widget.topic, widget.number);
+    if (widget.topic == null || widget.number == null) {
+      questions = getQuestions(widget.subjects, null, null);
+    } else {
+      questions = getQuestions(widget.subjects, widget.topic, widget.number);
+    }
     _selectedAnswers = List.filled(questions.length, null);
   }
 

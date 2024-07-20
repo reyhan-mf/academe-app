@@ -19,7 +19,7 @@ class QuizBank extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => const QuizPage(subjects: 'Matematika', topic: 'Pertambahan', number: '1')
+                    builder: (context) => const QuizPage(subjects: 'Matematika')
                   ),
                 );
               },

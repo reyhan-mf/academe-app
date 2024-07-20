@@ -1,6 +1,6 @@
 import 'package:acadame/models/quiz_question.dart';
 
-List<QuizQuestion> getQuestions(String subjects, String topic, String number) {
+List<QuizQuestion> getQuestions(String subjects, String? topic, String? number) {
   return [
     QuizQuestion(
       'What are the building blocks of $subjects dan $topic dan $number?',
