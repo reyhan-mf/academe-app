@@ -8,4 +8,6 @@ class QuizQuestion {
   late final List<String> _shuffledAnswers;
 
   List<String> get shuffledAnswers => _shuffledAnswers;
+
+  String get questionText => text;  // Fix this getter
 }

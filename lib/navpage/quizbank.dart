@@ -19,8 +19,10 @@ class QuizBank extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => const QuizPage(subjects: 'Matematika')
-                  ),
+                      builder: (context) => const QuizPage(
+                            subjects: 'Matematika',
+                            number: '10',
+                          )),
                 );
               },
               child: const Text('Matematika'),
@@ -33,8 +35,10 @@ class QuizBank extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) =>
-                        const QuizPage(subjects: 'Bahasa Indonesia', topic: 'Kata Benda', number: '1'),
+                    builder: (context) => const QuizPage(
+                        subjects: 'Bahasa Indonesia',
+                        topic: 'Kata Benda',
+                        number: '1'),
                   ),
                 );
               },
@@ -48,8 +52,10 @@ class QuizBank extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) =>
-                        const QuizPage(subjects: 'Bahasa Inggris', topic: 'Kata Kerja', number: '1'),
+                    builder: (context) => const QuizPage(
+                        subjects: 'Bahasa Inggris',
+                        topic: 'Kata Kerja',
+                        number: '7'),
                   ),
                 );
               },

@@ -24,16 +24,15 @@ class _QuizPageState extends State<QuizPage> {
   void initState() {
     super.initState();
     _initializeQuestions();
-    _startTimer();
   }
 
-  void _initializeQuestions() {
-    if (widget.topic == null || widget.number == null) {
-      questions = getQuestions(widget.subjects, null, null);
-    } else {
+  Future<void> _initializeQuestions() async {
+    await fetchData(widget.subjects, widget.topic, widget.number);
+    setState(() {
       questions = getQuestions(widget.subjects, widget.topic, widget.number);
-    }
-    _selectedAnswers = List.filled(questions.length, null);
+      _selectedAnswers = List.filled(questions.length, null);
+    });
+    _startTimer();
   }
 
   void _startTimer() {
@@ -194,7 +193,7 @@ class _QuizPageState extends State<QuizPage> {
         bool isCorrect =
             questions[index].shuffledAnswers[_selectedAnswers[index]!] ==
                 questions[index].answers[0];
-        return isCorrect ? const Color.fromARGB(255, 39, 41, 39) : Colors.red;
+        return isCorrect ? Colors.green : Colors.red;
       }
       return Colors.grey[300]!;
     } else {
