@@ -1,18 +1,14 @@
 import 'package:acadame/models/quiz_question.dart';
-
-
 import 'package:google_generative_ai/google_generative_ai.dart';
 
 String apiKey = "AIzaSyBp83nEOiJNSGvvvjbwy2DWslc3pYMUhBI"; // gemini 1.5
 List<QuizQuestion> questions = [];
 
 Future<void> fetchData(String subjects, String? topic, String? number) async {
-  final model = GenerativeModel(
-      model: 'gemini-1.5-flash', apiKey: apiKey);
+  final model = GenerativeModel(model: 'gemini-1.5-flash', apiKey: apiKey);
   final content = [
-    Content.text(
-        '''
-Buatkan $number soal $subjects dengan EMPAT pilihan jawaban. 
+    Content.text('''
+Buatkan 5 soal $subjects dengan EMPAT pilihan jawaban. 
 Ikuti format berikut dengan ketat untuk setiap soal:
 
 1. [Tulis pertanyaan lengkap di sini tanpa nomor atau label]
@@ -38,7 +34,6 @@ PENTING:
   final response = await model.generateContent(content);
   String? text = response.text;
   print(text);
-  print(text);
   if (text != null) {
     List<QuizQuestion> generatedQuestions = [];
     List<String> questionBlocks = text.split('\n\n');
@@ -46,8 +41,7 @@ PENTING:
       List<String> lines = block.split('\n');
       if (lines.length >= 5) {
         String questionText = lines[0].trim();
-        List<String> answers =
-            lines.sublist(1, 5).map((answer) => answer.trim()).toList();
+        List<String> answers = lines.sublist(1, 5).map((answer) => answer.trim()).toList();
         generatedQuestions.add(QuizQuestion(questionText, answers));
       }
     }
@@ -59,7 +53,7 @@ PENTING:
     print('Prompt: ${content[0].parts[0]}');
     print('');
     questions.forEach((question) {
-      print('Pertanyaan: ${question.questionText}');
+      print('Pertanyaan: ${question.text}');
       print('Jawaban:');
       for (int i = 0; i < question.answers.length; i++) {
         print(' - ${question.answers[i]}');
@@ -71,31 +65,34 @@ PENTING:
   }
 }
 
+Future<String> fetchSolution(String question, String correctAnswer) async {
+  final model = GenerativeModel(model: 'gemini-1.5-flash', apiKey: apiKey);
+  final content = [
+    Content.text('''
+Berikan penjelasan detail untuk soal berikut:
+$question
+
+Jawaban yang benar: $correctAnswer
+
+Format jawaban:
+Penjelasan:
+[Berikan penjelasan detail mengapa jawaban tersebut benar dan mengapa pilihan lain salah]
+''')
+  ];
+  
+  final response = await model.generateContent(content);
+  String? text = response.text;
+  
+  if (text != null) {
+    print('Pembahasan soal:');
+    print(text);
+    return text;
+  } else {
+    print('Gagal memuat pembahasan');
+    return 'Maaf, tidak dapat menghasilkan pembahasan saat ini.';
+  }
+}
 
 List<QuizQuestion> getQuestions(String subjects, String? topic, String? number) {
   return questions;  // Return the global questions list
 }
-
-// List<QuizQuestion> getQuestions(String subjects, String? topic, String? number) {
-//   return [
-//     QuizQuestion(
-//       'What are the building blocks of $subjects dan $topic dan $number?',
-//       [
-//         'Widgets',
-//         'Components',
-//         'Blocks',
-//         'Functions',
-//       ],
-//     ),
-//     QuizQuestion(
-//       'How are $subjects UIs built?',
-//       [
-//         'By combining widgets in code',
-//         'By combining widgets in a visual editor',
-//         'By defining widgets in config files',
-//         'By using XCode for iOS and Android Studio for Android',
-//       ],
-//     ),
-//     // Add more questions here...
-//   ];
-// }

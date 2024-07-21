@@ -19,6 +19,7 @@ class _QuizPageState extends State<QuizPage> {
   late List<int?> _selectedAnswers;
   bool _quizCompleted = false;
   bool _showingSolution = false;
+  bool _fetchingSolutions = false;
 
   @override
   void initState() {
@@ -52,10 +53,28 @@ class _QuizPageState extends State<QuizPage> {
     return '$minutes menit ${remainingSeconds.toString().padLeft(2, '0')} detik';
   }
 
-  void _toggleSolution() {
+  Future<void> _fetchSolutions() async {
     setState(() {
-      _showingSolution = !_showingSolution;
+      _fetchingSolutions = true;
     });
+    for (var question in questions) {
+      question.solution ??=
+          await fetchSolution(question.text, question.answers[0]);
+    }
+    setState(() {
+      _fetchingSolutions = false;
+      _showingSolution = true;
+    });
+  }
+
+  void _toggleSolution() {
+    if (!_showingSolution && !_fetchingSolutions) {
+      _fetchSolutions();
+    } else {
+      setState(() {
+        _showingSolution = !_showingSolution;
+      });
+    }
   }
 
   void _selectAnswer(int selectedIndex) {
@@ -70,6 +89,7 @@ class _QuizPageState extends State<QuizPage> {
     if (_currentQuestionIndex < questions.length - 1) {
       setState(() {
         _currentQuestionIndex++;
+        _showingSolution = false;
       });
     }
   }
@@ -78,6 +98,7 @@ class _QuizPageState extends State<QuizPage> {
     if (_currentQuestionIndex > 0) {
       setState(() {
         _currentQuestionIndex--;
+        _showingSolution = false;
       });
     }
   }
@@ -107,32 +128,33 @@ class _QuizPageState extends State<QuizPage> {
           children: [
             _buildProgressIndicator(),
             const SizedBox(height: 16),
-            SingleChildScrollView(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  if (_showingSolution)
+            Expanded(
+              child: SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
                     Text(
                       'Question ${_currentQuestionIndex + 1}: ${currentQuestion.text}',
                       style: const TextStyle(
                           fontSize: 18, fontWeight: FontWeight.bold),
                       softWrap: true,
-                    )
-                  else
-                    Text(
-                      currentQuestion.text,
-                      style: const TextStyle(fontSize: 18),
-                      softWrap: true,
                     ),
-                  const SizedBox(height: 24),
-                  if (!_showingSolution)
-                    ..._buildAnswerOptions(currentQuestion),
-                  const SizedBox(height: 24),
-                ],
+                    const SizedBox(height: 24),
+                    if (!_showingSolution)
+                      ..._buildAnswerOptions(currentQuestion)
+                    else if (_fetchingSolutions)
+                      const CircularProgressIndicator()
+                    else
+                      Text(
+                        currentQuestion.solution ?? 'No solution available',
+                        style: const TextStyle(fontSize: 16),
+                      ),
+                    const SizedBox(height: 24),
+                  ],
+                ),
               ),
             ),
             _buildNavigationButtons(),
-            const Spacer(),
           ],
         ),
       ),
